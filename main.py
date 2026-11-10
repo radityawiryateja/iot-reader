@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from pyrogram import Client, filters
+from pyrogram import Client, filters, idle
 from supabase import create_client, Client as SupabaseClient
 
 # Muat variabel environment dari file .env
@@ -82,6 +82,27 @@ async def sync_to_supabase(client, message):
         except Exception as e:
             print(f"[ERROR] Gagal sinkronisasi ke Supabase: {e}")
 
+# ... (kode filter & supabase Anda tetap sama) ...
+
+async def main():
+    await app.start()
+    print("🔄 Memperbarui cache database Telegram lokal...")
+    
+    try:
+        # Mengambil daftar riwayat chat agar Pyrogram mengenali ID dan Access Hash grup
+        async for dialog in app.get_dialogs():
+            pass
+        print("✅ Sinkronisasi grup berhasil!")
+    except Exception as e:
+        print(f"[WARN] Sinkronisasi sebagian gagal, tapi akan dilanjutkan: {e}")
+
+    print("🚀 Background listener Smart City siap dan berjalan!")
+    
+    # idle() akan menahan skrip agar terus berjalan di background tanpa memblokir sistem
+    await idle()
+    
+    await app.stop()
+
 if __name__ == "__main__":
-    print("Memulai background listener Smart City...")
-    app.run()
+    # Menjalankan fungsi main() sebagai asinkron
+    app.run(main())
